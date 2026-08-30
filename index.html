@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CPR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-theme="light">
+<div class="app">
+
+  <header>
+    <div class="logo">
+      <div class="mark">CPR</div>
+      <div>
+        <h1>CPR</h1>
+        <span id="brandSub">រូបភាព • ជជែក</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="langBtn" title="Language">KM</button>
+      <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <div class="tab active" data-view="photos" id="tabPhotos">រូបភាព</div>
+    <div class="tab" data-view="text" id="tabText">អក្សរ</div>
+    <div class="tab" data-view="voice" id="tabVoice">សំឡេង</div>
+  </nav>
+
+  <main>
+
+    <!-- ================= PHOTOS ================= -->
+    <section class="view active" id="view-photos">
+      <div class="composer">
+        <input type="text" id="captionInput" placeholder="សរសេរអ្វីមួយជាមួយរូបភាព...">
+        <div class="composer-actions">
+          <button id="choosePostBtn">🖼️ ជ្រើសរូប</button>
+          <button id="cameraPostBtn">📷 ថត</button>
+          <button id="postBtn" class="primary-btn small">📤 Post</button>
+        </div>
+        <div id="selectedPreviewWrap" style="display:none;">
+          <img id="selectedPreview" alt="preview">
+          <button id="clearSelected">✕</button>
+        </div>
+      </div>
+
+      <div class="photo-grid" id="photoGrid"></div>
+      <div class="empty-state" id="emptyState">
+        <div class="big">🖼️</div>
+        <div id="emptyText">មិនទាន់មាន Post ទេ</div>
+      </div>
+    </section>
+
+    <!-- ================= TEXT CHAT (real matching) ================= -->
+    <section class="view" id="view-text">
+      <div class="match-panel" id="textMatchPanel">
+        <div class="match-ring" id="textRing">💬</div>
+        <div class="match-title" id="textStatusTitle">រកមិត្តជជែកជាអក្សរ</div>
+        <div class="status-line" id="textStatus">ចុចប៊ូតុងខាងក្រោមដើម្បីចាប់ផ្តើម</div>
+        <div class="match-actions">
+          <button class="primary-btn" id="textFindBtn">ស្វែងរកឥឡូវនេះ</button>
+          <button class="secondary-btn" id="textNextBtn" style="display:none;">រកថ្មី</button>
+          <button class="secondary-btn danger" id="textLeaveBtn" style="display:none;">ចាកចេញ</button>
+        </div>
+      </div>
+
+      <div class="chat-box" id="textChatBox" style="display:none;">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="វាយសាររបស់អ្នក...">
+          <button id="sendBtn">ផ្ញើ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VOICE CHAT (real matching + WebRTC) ================= -->
+    <section class="view" id="view-voice">
+      <div class="match-panel" id="voiceMatchPanel">
+        <div class="match-ring" id="voiceRing">🎙️</div>
+        <div class="match-title" id="voiceStatusTitle">រកមិត្តជជែកសំឡេង</div>
+        <div class="status-line" id="voiceStatus">ចុចប៊ូតុងខាងក្រោមដើម្បីចាប់ផ្តើម</div>
+        <div class="match-actions">
+          <button class="primary-btn" id="voiceFindBtn">ស្វែងរកឥឡូវនេះ</button>
+          <button class="secondary-btn" id="voiceMuteBtn" style="display:none;">🔇 បិទសំឡេង</button>
+          <button class="secondary-btn" id="voiceNextBtn" style="display:none;">រកថ្មី</button>
+          <button class="secondary-btn danger" id="voiceLeaveBtn" style="display:none;">ចាកចេញ</button>
+        </div>
+      </div>
+      <audio id="remoteAudio" autoplay playsinline></audio>
+    </section>
+
+  </main>
+
+  <input type="file" id="fileInput" accept="image/*">
+
+  <div class="camera-overlay" id="cameraOverlay">
+    <video id="cameraVideo" autoplay playsinline muted></video>
+    <div class="camera-controls">
+      <button class="cam-close" id="camClose">✕</button>
+      <button class="shutter" id="camShutter"></button>
+      <button class="cam-flip" id="camFlip">↺</button>
+    </div>
+  </div>
+
+</div>
+
+<canvas id="captureCanvas" style="display:none;"></canvas>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/script.js"></script>
+</body>
+</html>
