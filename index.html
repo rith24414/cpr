@@ -1,116 +1,69 @@
 <!DOCTYPE html>
 <html lang="km">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>CPR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title> 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#e8f1ff;--bg2:#fdfdf5;--fg:#16202e;--card:#fff;--muted:#4b5a6e;--accent:#2f7cf6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#0b1220;--bg2:#162036;--fg:#eef3fb;--card:#1c273d;--muted:#a9b6cb}}
+:root[data-theme="dark"]{--bg1:#0b1220;--bg2:#162036;--fg:#eef3fb;--card:#1c273d;--muted:#a9b6cb}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:"Noto Sans Khmer",system-ui,sans-serif;color:var(--fg);background:linear-gradient(160deg,var(--bg1),var(--bg2));overflow:hidden;display:flex;flex-direction:column;align-items:center;user-select:none;-webkit-user-select:none}
+h1{margin-top:28px;font-size:clamp(22px,5vw,36px);text-align:center;padding:0 16px}
+p.hint{color:var(--muted);font-size:14px;margin-top:6px;text-align:center;padding:0 16px}
+.scene{flex:1;width:100%;perspective:900px;display:flex;align-items:center;justify-content:center;touch-action:pan-y;cursor:grab}
+.ring{position:relative;width:min(240px,62vw);height:min(340px,52vh);transform-style:preserve-3d}
+.card{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--card);box-shadow:0 18px 40px rgba(0,0,0,.28);cursor:pointer;backface-visibility:hidden}
+.card img{width:100%;height:78%;object-fit:cover;display:block;pointer-events:none}
+.card span{display:block;padding:12px;font-weight:700;text-align:center;font-size:16px}
+.nav{display:flex;gap:14px;margin-bottom:26px}
+.box ul{list-style:none;padding:0;margin-bottom:14px;line-height:2;font-size:14px;border-top:1px solid rgba(128,128,128,.3)}.box li{border-bottom:1px solid rgba(128,128,128,.3)}.mr{display:flex;gap:8px}.mr button{flex:1;font:inherit;border:0;border-radius:999px;background:var(--accent);color:#fff;padding:10px;cursor:pointer}.nav button,.close{font:inherit;border:0;border-radius:999px;background:var(--accent);color:#fff;padding:10px 22px;cursor:pointer;font-size:16px}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,10,20,.65);padding:20px;z-index:5}
+.modal.on{display:flex}
+.box{background:var(--card);border-radius:20px;max-width:480px;width:100%;overflow:hidden;animation:pop .35s ease;max-height:90vh;overflow-y:auto}
+.box img{width:100%;max-height:300px;object-fit:cover;display:block}
+.box div{padding:18px}
+.box h2{font-size:22px;margin-bottom:8px}
+.box p{color:var(--muted);line-height:1.7;margin-bottom:16px}
+@keyframes pop{from{transform:scale(.7) rotateX(30deg);opacity:0}to{transform:none;opacity:1}}
+</style>
 </head>
-<body data-theme="light">
-<div class="app">
-
-  <header>
-    <div class="logo">
-      <div class="mark">CPR</div>
-      <div>
-        <h1>CPR</h1>
-        <span id="brandSub">រូបភាព • ជជែក</span>
-      </div>
-    </div>
-    <div class="header-actions">
-      <button class="icon-btn" id="langBtn" title="Language">KM</button>
-      <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
-    </div>
-  </header>
-
-  <nav class="tabs">
-    <div class="tab active" data-view="photos" id="tabPhotos">រូបភាព</div>
-    <div class="tab" data-view="text" id="tabText">អក្សរ</div>
-    <div class="tab" data-view="voice" id="tabVoice">សំឡេង</div>
-  </nav>
-
-  <main>
-
-    <!-- ================= PHOTOS ================= -->
-    <section class="view active" id="view-photos">
-      <div class="composer">
-        <input type="text" id="captionInput" placeholder="សរសេរអ្វីមួយជាមួយរូបភាព...">
-        <div class="composer-actions">
-          <button id="choosePostBtn">🖼️ ជ្រើសរូប</button>
-          <button id="cameraPostBtn">📷 ថត</button>
-          <button id="postBtn" class="primary-btn small">📤 Post</button>
-        </div>
-        <div id="selectedPreviewWrap" style="display:none;">
-          <img id="selectedPreview" alt="preview">
-          <button id="clearSelected">✕</button>
-        </div>
-      </div>
-
-      <div class="photo-grid" id="photoGrid"></div>
-      <div class="empty-state" id="emptyState">
-        <div class="big">🖼️</div>
-        <div id="emptyText">មិនទាន់មាន Post ទេ</div>
-      </div>
-    </section>
-
-    <!-- ================= TEXT CHAT (real matching) ================= -->
-    <section class="view" id="view-text">
-      <div class="match-panel" id="textMatchPanel">
-        <div class="match-ring" id="textRing">💬</div>
-        <div class="match-title" id="textStatusTitle">រកមិត្តជជែកជាអក្សរ</div>
-        <div class="status-line" id="textStatus">ចុចប៊ូតុងខាងក្រោមដើម្បីចាប់ផ្តើម</div>
-        <div class="match-actions">
-          <button class="primary-btn" id="textFindBtn">ស្វែងរកឥឡូវនេះ</button>
-          <button class="secondary-btn" id="textNextBtn" style="display:none;">រកថ្មី</button>
-          <button class="secondary-btn danger" id="textLeaveBtn" style="display:none;">ចាកចេញ</button>
-        </div>
-      </div>
-
-      <div class="chat-box" id="textChatBox" style="display:none;">
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="វាយសាររបស់អ្នក...">
-          <button id="sendBtn">ផ្ញើ</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= VOICE CHAT (real matching + WebRTC) ================= -->
-    <section class="view" id="view-voice">
-      <div class="match-panel" id="voiceMatchPanel">
-        <div class="match-ring" id="voiceRing">🎙️</div>
-        <div class="match-title" id="voiceStatusTitle">រកមិត្តជជែកសំឡេង</div>
-        <div class="status-line" id="voiceStatus">ចុចប៊ូតុងខាងក្រោមដើម្បីចាប់ផ្តើម</div>
-        <div class="match-actions">
-          <button class="primary-btn" id="voiceFindBtn">ស្វែងរកឥឡូវនេះ</button>
-          <button class="secondary-btn" id="voiceMuteBtn" style="display:none;">🔇 បិទសំឡេង</button>
-          <button class="secondary-btn" id="voiceNextBtn" style="display:none;">រកថ្មី</button>
-          <button class="secondary-btn danger" id="voiceLeaveBtn" style="display:none;">ចាកចេញ</button>
-        </div>
-      </div>
-      <audio id="remoteAudio" autoplay playsinline></audio>
-    </section>
-
-  </main>
-
-  <input type="file" id="fileInput" accept="image/*">
-
-  <div class="camera-overlay" id="cameraOverlay">
-    <video id="cameraVideo" autoplay playsinline muted></video>
-    <div class="camera-controls">
-      <button class="cam-close" id="camClose">✕</button>
-      <button class="shutter" id="camShutter"></button>
-      <button class="cam-flip" id="camFlip">↺</button>
-    </div>
-  </div>
-
-</div>
-
-<canvas id="captureCanvas" style="display:none;"></canvas>
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/script.js"></script>
+<body>
+<h1>លក់ម្ហូបពិសារ</h1>
+<p class="hint">អូស ឬរំកិល (scroll) ដើម្បីបង្វិល · ចុចលើរូបដើម្បីមើលព័ត៌មាន</p>
+<div class="scene" id="scene"><div class="ring" id="ring"></div></div>
+<div class="nav"><button id="prev" aria-label="មុន">‹</button><button id="next" aria-label="បន្ទាប់">›</button></div>
+<div class="modal" id="modal"><div class="box"><img id="mi" alt=""><div><h2 id="mt"></h2><p id="md"></p><ul id="ml"></ul><div class="mr"><button id="mp">‹ មុន</button><button id="mn">បន្ទាប់ ›</button><button class="close" id="mc">បិទ</button></div></div></div></div>
+<script>
+var items=[
+{img:"90.png",t:"ឆាសាច់គោរ",d:" មានរស់ជាតិឈ្ងុយឆា្ងញ់"},
+{img:"rith.jpg",t:"ភារិត ជាចុងភៅ",d:"ស្នាដៃគាត់ធានាថាឆ្ងាញ់"},
+{img:"២៥.png",t:"ភេសជ្ជ:អាយស៍ សេរីថ្មី",d:"មានរស់ជាតិមិទ្រលាន់ឡើយ"},
+{img:"mix.jpg",t:"រូបភារិត",d:" single"},
+{img:"29.png",t:"លក់កាស់",d:"ស្នាដៃកូនខ្មែរ"},
+{img:"ពស់.py.png",t:"ភេសជ្ជ:Macha late",d:"មានរស់ជាតិខុសពីគេ"}
+];
+var n=items.length,ring=document.getElementById('ring'),scene=document.getElementById('scene'),step=360/n,R=210,rot=0,vel=0,drag=false,sx=0,moved=0,auto=true,cards=[];
+items.forEach(function(it,i){var c=document.createElement('div');c.className='card';c.innerHTML='<img src="'+it.img+'" alt=""><span>'+it.t+'</span>';c.style.transform='rotateY('+(i*step)+'deg) translateZ('+R+'px)';c.dataset.i=i;ring.appendChild(c);cards.push(c)});
+function render(){ring.style.transform='translateZ(-'+R+'px) rotateY('+rot+'deg)'}
+function loop(){if(!drag){if(auto)rot-=0.25;rot+=vel;vel*=0.94}render();requestAnimationFrame(loop)}
+loop();
+scene.addEventListener('pointerdown',function(e){drag=true;sx=e.clientX;moved=0;vel=0;auto=false;scene.setPointerCapture(e.pointerId)});
+scene.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-sx;sx=e.clientX;moved+=Math.abs(dx);rot+=dx*0.4;vel=dx*0.15});
+scene.addEventListener('pointerup',function(e){drag=false;if(moved<6){var el=document.elementFromPoint(e.clientX,e.clientY);var c=el&&el.closest('.card');if(c)openM(+c.dataset.i)}});
+function snap(dir){auto=false;rot=Math.round(rot/step+dir)*step;vel=0}
+document.getElementById('prev').onclick=function(){snap(1)};
+document.getElementById('next').onclick=function(){snap(-1)};
+var m=document.getElementById('modal');
+var L=[['ប្រភេទ:ឆា','ឆាម្រិច · ភ្លៀ· ជាន','អារម្មណ៍: ឆ្ងាញ់'],['ប្រភេទមនុស្ស: រួសរាយរាក់ទាក់','ចេះគោរពពេលវេលា: ងើបព្រលឹម / ធ្វើការដល់ម៉ោងចេញ','អារម្មណ៍: រីករាយ'],['ចំនួន:ផឹកអត់កំណត់ឲតែបង់លុយ','អាជ្ញាប័ណ្ណ: មានអាជ្ញាប័ណ្ណពីក្រសួង','ក្រុមធ្វើការ: សប្បាយៗ'],['រូប:ភារិត','នៅsingle · មិនធ្លាប់មានស្នេហា','ការងារ: ចេះទាំងអស់'],['ប្រភេទកាស: ធន់','រឹងមុំា: ស្វិត / ស្តាប់មិនហហឹងត្រចៀក','អារម្មណ៍: រីករាយ'],['ចំនួន:ផឹកអត់កំណត់ឲតែបង់លុយ','រូបមន្ត: មិនចម្លងគេ','គ្រៀង: មកពីអារ៉ាប់']],cur=0;
+function openM(i){cur=i;document.getElementById('ml').innerHTML=L[i].map(function(s){return '<li>'+s+'</li>'}).join('');document.getElementById('mi').src=items[i].img;document.getElementById('mt').textContent=items[i].t;document.getElementById('md').textContent=items[i].d;m.classList.add('on')}
+document.getElementById('mp').onclick=function(){openM((cur+n-1)%n)};document.getElementById('mn').onclick=function(){openM((cur+1)%n)};
+scene.addEventListener('wheel',function(e){e.preventDefault();auto=false;vel=-e.deltaY*0.04},{passive:false});
+document.getElementById('mc').onclick=function(){m.classList.remove('on')};
+m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('on')});
+</script>
 </body>
 </html>
